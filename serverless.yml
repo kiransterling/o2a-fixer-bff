@@ -1,0 +1,73 @@
+
+service: o2a-fixer-bff
+frameworkVersion: '2'
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: false  
+
+provider:
+  name: aws
+  runtime: python3.8
+  lambdaHashingVersion: 20201221
+
+
+functions:
+  get_error_summary:
+    handler: handler.get_error_summary
+    events:
+      - alb:
+          listenerArn: arn:aws:elasticloadbalancing:us-east-1:854501762378:listener/app/fixer/433eae3bc6016d3e/0a95e868bcbfa797
+          priority: 2
+          conditions:
+            path: /*
+            method: GET
+
+  get_error_details_summary:
+    handler: handler.get_error_details_summary
+    events:
+      - alb:
+          listenerArn: arn:aws:elasticloadbalancing:us-east-1:854501762378:listener/app/fixer/433eae3bc6016d3e/0a95e868bcbfa797
+          priority: 3
+          conditions:
+            path: /*
+            method: GET
+                
+  get_error_detail:
+    handler: handler.get_error_detail
+    events:
+      - alb:
+          listenerArn: arn:aws:elasticloadbalancing:us-east-1:854501762378:listener/app/fixer/433eae3bc6016d3e/0a95e868bcbfa797
+          priority: 4
+          conditions:
+            path: /*
+            method: GET
+
+  update_one_error:
+    handler: handler.update_one_error
+    events:
+      - alb:
+          listenerArn: arn:aws:elasticloadbalancing:us-east-1:854501762378:listener/app/fixer/433eae3bc6016d3e/0a95e868bcbfa797
+          priority: 5
+          conditions:
+            path: /*
+            method: PATCH               
+
+    environment:
+      ERROR_SUMMARY_TABLE: ErrorSummary
+      ERROR_DETAIL_TABLE: ErrorDetail
+
+# Add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
